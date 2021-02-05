@@ -1,0 +1,62 @@
+{
+  "name": "umi-plugin-dynamic-import-from-cdn",
+  "main": "lib/index.js",
+  "version": "0.1.0",
+  "description": "dynamic import cdn modules when needed for umi",
+  "authors": {
+    "name": "fengsx",
+    "email": "fengsx@msn.com"
+  },
+  "repository": "https://github.com/fengsx/umi-plugin-dynamic-import-from-cdn",
+  "scripts": {
+    "start": "cross-env APP_ROOT=test/fixtures/ umi dev",
+    "umi-build": "cross-env APP_ROOT=test/fixtures/ umi build",
+    "build": "father-build",
+    "release": "npm run build && npm publish",
+    "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'",
+    "test": "umi-test",
+    "test:coverage": "umi-test --coverage"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write",
+      "git add"
+    ],
+    "*.{js,jsx,less,md,json}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "dependencies": {
+    "antd": "^4.12.2",
+    "jquery": "^3.5.1",
+    "moment": "^2.29.1",
+    "react": "17.x",
+    "react-dom": "17.x",
+    "video.js": "^7.10.2"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.5.5",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
+    "@types/webpack": "^4.41.26",
+    "@types/echarts": "^4.9.3",
+    "@umijs/preset-react": "1.x",
+    "@umijs/test": "^3.3.7",
+    "cross-env": "^6.0.3",
+    "father-build": "^1.17.2",
+    "lint-staged": "^10.0.7",
+    "prettier": "^2.2.0",
+    "typescript": "^4.1.2",
+    "umi": "^3.3.7",
+    "yorkie": "^2.0.0"
+  },
+  "files": [
+    "lib",
+    "es"
+  ],
+  "license": "MIT"
+}
