@@ -2,12 +2,13 @@ import { IScriptConfig } from '@umijs/types';
 // ref:
 // - https://umijs.org/plugins/api
 import { IApi } from '@umijs/types';
+import { uniq } from 'lodash';
 import { getStyles, getScripts, IHTMLTag } from './utils';
-import dynamicImportFromCDNPlugin from './dynamicImportFromCDNPlugin';
+import RuntimeImportPlugin from './runtimeImport';
 
 export default function (api: IApi) {
   api.describe({
-    key: 'dynamicImportFromCDN',
+    key: 'runtimeImport',
     config: {
       default: {},
       schema(joi) {
@@ -44,15 +45,16 @@ export default function (api: IApi) {
   let links: IHTMLTag[] = [];
   let styles: IHTMLTag[] = [];
   api.chainWebpack((memo) => {
-    memo.plugin('dynamicImportFromCDNPlugin').use(dynamicImportFromCDNPlugin, [
+    memo.plugin('RuntimeImportPlugin').use(RuntimeImportPlugin, [
       {
-        assets: api.userConfig.dynamicImportFromCDN,
+        assets: api.userConfig.runtimeImport,
         getGlobalCdn: (type, addon) => {
+          const set = uniq(Object.values(addon));
           if (type === 'js') {
-            scripts = getScripts(Object.values(addon));
+            scripts = getScripts(set);
           }
           if (type === 'css') {
-            [links, styles] = getStyles(Object.values(addon));
+            [links, styles] = getStyles(set);
           }
         },
       },

@@ -1,5 +1,5 @@
-# umi-plugin-dynamic-import-from-cdn
-[![NPM version](https://img.shields.io/npm/v/umi-plugin-dynamic-import-from-cdn.svg?style=flat)](https://npmjs.org/package/umi-plugin-dynamic-import-from-cdn) [![NPM downloads](http://img.shields.io/npm/dm/umi-plugin-dynamic-import-from-cdn.svg?style=flat)](https://npmjs.org/package/umi-plugin-dynamic-import-from-cdn)
+# umi-plugin-runtime-import
+[![NPM version](https://img.shields.io/npm/v/umi-plugin-runtime-import.svg?style=flat)](https://npmjs.org/package/umi-plugin-runtime-import) [![NPM downloads](http://img.shields.io/npm/dm/umi-plugin-runtime-import.svg?style=flat)](https://npmjs.org/package/umi-plugin-runtime-import)
 
 
 Dynamic import cdn modules when needed for umi.
@@ -8,8 +8,8 @@ Dynamic import cdn modules when needed for umi.
 ## Install
 
 ```bash
-# or yarn add umi-plugin-dynamic-import-from-cdn
-$ npm install umi-plugin-dynamic-import-from-cdn
+# or yarn add umi-plugin-runtime-import
+$ npm install umi-plugin-runtime-import
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ Configure in `.umirc.js` or `config/config.ts`,
 
 ``` javascript
 export default {
-  dynamicImportFromCDN: {
+  runtimeImport: {
     base: 'https:///gw.alipayobjects.com/os/lib/',
     js: {
       react: {
@@ -51,7 +51,7 @@ $ yarn
 Start the dev server,
 
 ```bash
-$ yarn build && yarn start
+$ yarn start
 ```
 
 

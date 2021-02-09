@@ -3,7 +3,7 @@ import type { Chunk as ChunkType, compilation } from 'webpack';
 // @ts-ignore
 import Chunk from 'webpack/lib/Chunk';
 
-const PluginName = 'DynamicImportFromCdnPlugin';
+const PluginName = 'RuntimeImportPlugin';
 
 type StringType = {
   [key: string]: string;
@@ -60,7 +60,7 @@ type Module = compilation.Module & {
   };
 };
 
-export default class DynamicImportFromCDNPlugin {
+export default class RuntimeImportPlugin {
   assets: FormattedCdnOptType;
   globalCdn = {
     js: {} as StringType,
@@ -181,7 +181,10 @@ export default class DynamicImportFromCDNPlugin {
     return dependencies;
   };
 
-  addJsTemplate = (compilation: compilation.Compilation) => {
+  addJsTemplate = (
+    compiler: Compiler,
+    compilation: compilation.Compilation,
+  ) => {
     compilation.mainTemplate.hooks.localVars.tap(PluginName, (source) =>
       source.replace(`function jsonpScriptSrc(chunkId) {`, (searchValue) =>
         Template.asString([
@@ -196,17 +199,26 @@ export default class DynamicImportFromCDNPlugin {
       ),
     );
 
-    compilation.mainTemplate.hooks.requireEnsure?.tap(PluginName, (source) =>
-      source
+    compilation.mainTemplate.hooks.requireEnsure?.tap(PluginName, (source) => {
+      // webpack 5 is using output.uniqueName instead jsonpFunction
+      // @ts-ignore
+      const { jsonpFunction, uniqueName } = compiler.options.output || {};
+      const outputName = `window["${
+        uniqueName || jsonpFunction || 'webpackJsonp'
+      }"]`;
+
+      return source
         .replace(`var chunk = installedChunks[chunkId];`, (searchValue) =>
           Template.asString([
             searchValue,
             Template.indent([
-              `if(cdnJs[chunkId]) {`,
               Template.indent([
-                `webpackJsonp.push([[chunkId], window[cdnJs[chunkId].moduleName]]);`,
+                `if(cdnJs[chunkId]) {`,
+                Template.indent([
+                  `${outputName}.push([[chunkId], window[cdnJs[chunkId].moduleName]]);`,
+                ]),
+                '}',
               ]),
-              '}',
             ]),
           ]),
         )
@@ -214,18 +226,21 @@ export default class DynamicImportFromCDNPlugin {
           `var script = document.createElement('script')`,
           (searchValue) =>
             Template.asString([
-              `if(cdnJs[chunkId] && cdnJs[chunkId].moduleName && window[cdnJs[chunkId].moduleName]) {`,
+              `if(cdnJs[chunkId] && ((cdnJs[chunkId].moduleName && window[cdnJs[chunkId].moduleName]) || (cdnJs[chunkId].url && [].slice.call(document.scripts).map(script=>script.src).indexOf() > -1))) {`,
               Template.indent([
-                `webpackJsonp.push([[chunkId], window[cdnJs[chunkId].moduleName]]);`,
+                `${outputName}.push([[chunkId], window[cdnJs[chunkId].moduleName]]);`,
               ]),
               `} else {`,
               Template.indent([searchValue]),
             ]),
         )
         .replace(`document.head.appendChild(script);`, (searchValue) =>
-          Template.asString([Template.indent([searchValue]), '}']),
-        ),
-    );
+          Template.asString([
+            Template.indent([Template.indent([searchValue])]),
+            '}',
+          ]),
+        );
+    });
   };
 
   addJsDependencies = (compilation: compilation.Compilation) => {
@@ -385,9 +400,8 @@ export default class DynamicImportFromCDNPlugin {
 
   apply(compiler: Compiler) {
     this.addJsExternals(compiler);
-
     compiler.hooks.compilation.tap(PluginName, (compilation) => {
-      this.addJsTemplate(compilation);
+      this.addJsTemplate(compiler, compilation);
       this.addJsDependencies(compilation);
 
       this.addCssTemplate(compilation);

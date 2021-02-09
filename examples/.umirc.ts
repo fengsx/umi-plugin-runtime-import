@@ -6,19 +6,20 @@ export default defineConfig({
   },
   dynamicImport: {},
   fastRefresh: {},
-  plugins: [require.resolve('../../lib/')],
+  plugins: [require.resolve('../lib/')],
   externals: { echarts: 'echarts' },
-  dynamicImportFromCDN: {
+  runtimeImport: {
     base: 'https:///gw.alipayobjects.com/os/lib/',
     js: {
       react: {
         moduleName: 'React',
-        url: 'react/16.14.0/umd/react.development.js',
+        url:
+          'https:///gw.alipayobjects.com/os/lib/??react/16.13.0/umd/react.production.min.js,react-dom/16.13.1/umd/react-dom.production.min.js',
       },
       'react-dom': {
         moduleName: 'ReactDOM',
         url:
-          'https:///gw.alipayobjects.com/os/lib/react-dom/16.14.0/umd/react-dom.development.js',
+          '??react/16.13.0/umd/react.production.min.js,react-dom/16.13.1/umd/react-dom.production.min.js',
       },
       moment: {
         moduleName: 'moment',
@@ -39,7 +40,8 @@ export default defineConfig({
       },
     },
     css: {
-      'video.js/dist/video-js.min.css': 'video.js/7.6.6/dist/alt/video-js-cdn.min.css',
+      'video.js/dist/video-js.min.css':
+        'video.js/7.6.6/dist/alt/video-js-cdn.min.css',
       'antd/dist/antd.css': {
         url: 'https://gw.alipayobjects.com/os/lib/antd/4.12.2/dist/antd.css',
       },
