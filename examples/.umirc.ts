@@ -5,8 +5,7 @@ export default defineConfig({
     type: 'none',
   },
   dynamicImport: {},
-  fastRefresh: {},
-  plugins: [require.resolve('../lib/')],
+  plugins: [require.resolve('../lib')],
   externals: { echarts: 'echarts' },
   runtimeImport: {
     base: 'https:///gw.alipayobjects.com/os/lib/',

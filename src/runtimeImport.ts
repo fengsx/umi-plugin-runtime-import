@@ -226,7 +226,7 @@ export default class RuntimeImportPlugin {
           `var script = document.createElement('script')`,
           (searchValue) =>
             Template.asString([
-              `if(cdnJs[chunkId] && ((cdnJs[chunkId].moduleName && window[cdnJs[chunkId].moduleName]) || (cdnJs[chunkId].url && [].slice.call(document.scripts).map(script=>script.src).indexOf() > -1))) {`,
+              `if(cdnJs[chunkId] && cdnJs[chunkId].moduleName && window[cdnJs[chunkId].moduleName]) {`,
               Template.indent([
                 `${outputName}.push([[chunkId], window[cdnJs[chunkId].moduleName]]);`,
               ]),
@@ -275,25 +275,25 @@ export default class RuntimeImportPlugin {
   };
 
   addCssTemplate = (compilation: compilation.Compilation) => {
-    compilation.mainTemplate.hooks.localVars.tap(PluginName, function (source) {
+    compilation.mainTemplate.hooks.localVars.tap(PluginName, (source) => {
       return Template.asString([
         source,
         '',
         '// object to store loaded cdn CSS chunks',
         `var installedCdnCssChunks = {};`,
+        `var cdnCss = ${JSON.stringify(this.cdnCss, null, '\t')};`,
       ]);
     });
 
     compilation.mainTemplate.hooks.requireEnsure.tap(PluginName, (source) => {
       return Template.asString([
         source,
-        `var cdnCss = ${JSON.stringify(this.cdnCss, null, '\t')};`,
         `if(installedCdnCssChunks[chunkId]) promises.push(installedCdnCssChunks[chunkId]);`,
         `else if(installedCdnCssChunks[chunkId] !== 0 && cdnCss[chunkId]) {`,
         Template.indent([
           `promises.push(installedCdnCssChunks[chunkId] = Promise.all(cdnCss[chunkId].map(function(href) {`,
           Template.indent([
-            `var fullHref = href;`,
+            `var fullhref = href;`,
             `return new Promise(function(resolve, reject) {`,
             Template.indent([
               'var existingLinkTags = document.getElementsByTagName("link");',
@@ -301,7 +301,7 @@ export default class RuntimeImportPlugin {
               Template.indent([
                 'var tag = existingLinkTags[i];',
                 'var dataHref = tag.getAttribute("data-href") || tag.getAttribute("href");',
-                'if(tag.rel === "stylesheet" && (dataHref === href || dataHref === fullHref)) return resolve();',
+                'if(tag.rel === "stylesheet" && (dataHref === href || dataHref === fullhref)) return resolve();',
               ]),
               '}',
               'var existingStyleTags = document.getElementsByTagName("style");',
@@ -309,7 +309,7 @@ export default class RuntimeImportPlugin {
               Template.indent([
                 'var tag = existingStyleTags[i];',
                 'var dataHref = tag.getAttribute("data-href");',
-                'if(dataHref === href || dataHref === fullHref) return resolve();',
+                'if(dataHref === href || dataHref === fullhref) return resolve();',
               ]),
               '}',
               'var linkTag = document.createElement("link");',
@@ -318,7 +318,7 @@ export default class RuntimeImportPlugin {
               'linkTag.onload = resolve;',
               'linkTag.onerror = function(event) {',
               Template.indent([
-                'var request = event && event.target && event.target.src || fullHref;',
+                'var request = event && event.target && event.target.src || fullhref;',
                 'var err = new Error("Loading CSS chunk " + chunkId + " failed.\\n(" + request + ")");',
                 'err.code = "Cdn_CSS_CHUNK_LOAD_FAILED";',
                 'err.request = request;',
@@ -327,11 +327,7 @@ export default class RuntimeImportPlugin {
                 'reject(err);',
               ]),
               '};',
-              'linkTag.href = fullHref;',
-              // crossOriginLoading ?
-              //     Template.asString([`if (linkTag.href.indexOf(window.location.origin + '/') !== 0) {`,
-              //         Template.indent(`linkTag.crossOrigin = ${JSON.stringify(crossOriginLoading)};`), '}'
-              //     ]) : '',
+              'linkTag.href = fullhref;',
               'document.head.appendChild(linkTag);',
             ]),
             `});`,
