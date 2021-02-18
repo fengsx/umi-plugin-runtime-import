@@ -6,7 +6,8 @@ export default defineConfig({
   },
   dynamicImport: {},
   plugins: [require.resolve('../lib')],
-  externals: { echarts: 'echarts' },
+  externals: { echarts: 'echarts', moment: 'moment' },
+  scripts: ['https://gw.alipayobjects.com/os/lib/moment/2.29.1/moment.js'],
   runtimeImport: {
     base: 'https:///gw.alipayobjects.com/os/lib/',
     js: {
@@ -20,10 +21,6 @@ export default defineConfig({
         url:
           '??react/16.13.0/umd/react.production.min.js,react-dom/16.13.1/umd/react-dom.production.min.js',
       },
-      moment: {
-        moduleName: 'moment',
-        url: 'https://gw.alipayobjects.com/os/lib/moment/2.29.1/moment.js',
-      },
       jquery: {
         moduleName: 'jQuery',
         url: 'https:///gw.alipayobjects.com/os/lib/jquery/3.5.1/dist/jquery.js',
@@ -35,14 +32,14 @@ export default defineConfig({
       },
       antd: {
         moduleName: 'antd',
-        url: 'https://gw.alipayobjects.com/os/lib/antd/4.12.2/dist/antd.js',
+        url: 'https://gw.alipayobjects.com/os/lib/antd/4.12.3/dist/antd.js',
       },
     },
     css: {
       'video.js/dist/video-js.min.css':
         'video.js/7.6.6/dist/alt/video-js-cdn.min.css',
       'antd/dist/antd.css': {
-        url: 'https://gw.alipayobjects.com/os/lib/antd/4.12.2/dist/antd.css',
+        url: 'https://gw.alipayobjects.com/os/lib/antd/4.12.3/dist/antd.css',
       },
     },
   },

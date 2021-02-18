@@ -1,10 +1,9 @@
 import { IScriptConfig } from '@umijs/types';
-// ref:
-// - https://umijs.org/plugins/api
 import { IApi } from '@umijs/types';
 import { uniq } from 'lodash';
 import { getStyles, getScripts, IHTMLTag } from './utils';
 import RuntimeImportPlugin from './runtimeImport';
+import type { CdnOptType } from './runtimeImport';
 
 export default function (api: IApi) {
   api.describe({
@@ -44,10 +43,12 @@ export default function (api: IApi) {
   let scripts: IScriptConfig = [];
   let links: IHTMLTag[] = [];
   let styles: IHTMLTag[] = [];
+  let assets: CdnOptType = api.userConfig.runtimeImport;
+
   api.chainWebpack((memo) => {
     memo.plugin('RuntimeImportPlugin').use(RuntimeImportPlugin, [
       {
-        assets: api.userConfig.runtimeImport,
+        assets,
         getGlobalCdn: (type, addon) => {
           const set = uniq(Object.values(addon));
           if (type === 'js') {
@@ -60,6 +61,19 @@ export default function (api: IApi) {
       },
     ]);
     return memo;
+  });
+
+  api.modifyConfig((memo) => {
+    const externals = memo.externals || {};
+
+    Object.entries(assets.js || {}).forEach(([key, value]) => {
+      externals[key] = `var ${value.moduleName}`;
+    });
+
+    return {
+      ...memo,
+      externals,
+    };
   });
 
   api.addHTMLScripts(() => scripts);

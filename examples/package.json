@@ -7,14 +7,14 @@
   },
   "repository": "https://github.com/fengsx/umi-plugin-runtime-import",
   "scripts": {
-    "start": "umi dev",
-    "build": "umi build"
+    "start": "ANALYZE=1 umi dev",
+    "build": "ANALYZE=1 umi build"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"
   },
   "dependencies": {
-    "antd": "^4.12.2",
+    "antd": "^4.12.3",
     "jquery": "^3.5.1",
     "moment": "^2.29.1",
     "react": "17.x",

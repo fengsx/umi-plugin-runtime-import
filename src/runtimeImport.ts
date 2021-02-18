@@ -1,4 +1,4 @@
-import { Template, ExternalsPlugin, Compiler } from 'webpack';
+import { Template, Compiler } from 'webpack';
 import type { Chunk as ChunkType, compilation } from 'webpack';
 // @ts-ignore
 import Chunk from 'webpack/lib/Chunk';
@@ -117,12 +117,6 @@ export default class RuntimeImportPlugin {
     });
 
     return { js: cdnJs, css: cdnCss };
-  };
-
-  addJsExternals = (compiler: Compiler) => {
-    Object.entries(this.assets.js || {}).forEach(([, value]) => {
-      new ExternalsPlugin('var', value.moduleName).apply(compiler);
-    });
   };
 
   addGlobalCdn = (type: 'js' | 'css', chunk: ChunkType) => {
@@ -395,7 +389,6 @@ export default class RuntimeImportPlugin {
   };
 
   apply(compiler: Compiler) {
-    this.addJsExternals(compiler);
     compiler.hooks.compilation.tap(PluginName, (compilation) => {
       this.addJsTemplate(compiler, compilation);
       this.addJsDependencies(compilation);
