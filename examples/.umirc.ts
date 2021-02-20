@@ -6,7 +6,7 @@ export default defineConfig({
   },
   dynamicImport: {},
   plugins: [require.resolve('../lib')],
-  externals: { echarts: 'echarts', moment: 'moment' },
+  externals: { echarts: 'echarts' },
   scripts: ['https://gw.alipayobjects.com/os/lib/moment/2.29.1/moment.js'],
   runtimeImport: {
     base: 'https:///gw.alipayobjects.com/os/lib/',
@@ -33,6 +33,15 @@ export default defineConfig({
       antd: {
         moduleName: 'antd',
         url: 'https://gw.alipayobjects.com/os/lib/antd/4.12.3/dist/antd.js',
+      },
+      moment: {
+        moduleName: 'moment',
+        url: 'https://gw.alipayobjects.com/os/lib/moment/2.29.1/moment.js',
+      },
+      'video.js': {
+        moduleName: 'window["videojs"]',
+        url:
+          'https://gw.alipayobjects.com/os/lib/video.js/7.6.6/dist/video.min.js',
       },
     },
     css: {

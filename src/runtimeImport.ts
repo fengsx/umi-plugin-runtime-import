@@ -62,22 +62,15 @@ type Module = compilation.Module & {
 
 export default class RuntimeImportPlugin {
   assets: FormattedCdnOptType;
-  globalCdn = {
-    js: {} as StringType,
-    css: {} as StringType,
-  };
 
   installedCss: { [key: string]: boolean } = {};
   cdnCss: { [key: string]: string[] } = {};
+  cdnJs: { [key: string]: JsOptType } = {};
 
   getGlobalCdn: PluginType['getGlobalCdn'] = () => null;
 
   constructor({ assets, getGlobalCdn }: PluginType) {
     this.assets = this.formatOpt(assets);
-    this.globalCdn = {
-      js: {},
-      css: {},
-    };
     this.getGlobalCdn = getGlobalCdn;
   }
 
@@ -120,16 +113,14 @@ export default class RuntimeImportPlugin {
   };
 
   addGlobalCdn = (type: 'js' | 'css', chunk: ChunkType) => {
+    const global: StringType = {};
     Object.entries(this.assets[type] || {}).forEach(([k, v]) => {
-      if (
-        !this.globalCdn[type][k] &&
-        this.findDependencies(k, chunk.entryModule as Module)
-      ) {
-        this.globalCdn[type][k] = v.url;
+      if (!global[k] && this.findDependencies(k, chunk.entryModule as Module)) {
+        global[k] = v.url;
       }
     });
 
-    this.getGlobalCdn(type, this.globalCdn[type]);
+    this.getGlobalCdn(type, global);
   };
 
   findDependencies = (
@@ -140,7 +131,7 @@ export default class RuntimeImportPlugin {
     if (!res) res = {};
     if (module?.dependencies) {
       for (let d of module.dependencies) {
-        if (d.request === dep) return !!d;
+        if (d.request === dep) return true;
 
         if (d.module && d.userRequest && !res[d.userRequest]) {
           res[d.userRequest] = true;
@@ -155,15 +146,8 @@ export default class RuntimeImportPlugin {
 
   getDependencies = (modules: Module[]): Module[] => {
     let dependencies: Module[] = [];
-    modules
-      .filter(
-        (m) =>
-          m &&
-          m.blocks &&
-          m.blocks.length > 0 &&
-          typeof m.source === 'function',
-      )
-      .forEach((module) => {
+    modules.forEach((module) => {
+      if (typeof module.source === 'function') {
         module.blocks?.forEach((block) => {
           block.dependencies.forEach((d) => {
             let chunkGroup = d.block?.chunkGroup;
@@ -171,7 +155,8 @@ export default class RuntimeImportPlugin {
             dependencies.push(d);
           });
         });
-      });
+      }
+    });
     return dependencies;
   };
 
@@ -182,7 +167,7 @@ export default class RuntimeImportPlugin {
     compilation.mainTemplate.hooks.localVars.tap(PluginName, (source) =>
       source.replace(`function jsonpScriptSrc(chunkId) {`, (searchValue) =>
         Template.asString([
-          `var cdnJs = ${JSON.stringify(this.assets.js, null, '\t')};`,
+          `var cdnJs = ${JSON.stringify(this.cdnJs, null, '\t')};`,
           searchValue,
           Template.indent([
             `if(cdnJs[chunkId]) {`,
@@ -252,7 +237,7 @@ export default class RuntimeImportPlugin {
 
           for (let key in this.assets.js) {
             if (
-              !this.globalCdn.js[key] &&
+              !this.cdnJs[key] &&
               chunkGroup &&
               !chunkGroup.chunks.find((ele) => `${ele.id}` === key) &&
               this.findDependencies(key, d.module)
@@ -261,6 +246,7 @@ export default class RuntimeImportPlugin {
               chunk.id = key;
               chunk.chunkReason = 'cdn';
               chunkGroup.chunks?.push(chunk);
+              this.cdnJs[key] = this.assets.js[key];
             }
           }
         }
@@ -362,14 +348,8 @@ export default class RuntimeImportPlugin {
             }
             //find css map
             for (let c of chunk.getAllAsyncChunks()) {
-              Object.entries(this.assets.css)
-                .filter(([key, val]) => {
-                  return (
-                    !this.globalCdn.css[key] &&
-                    !this.cdnCss[c.id]?.includes(val.url)
-                  );
-                })
-                .forEach(([key, val]) => {
+              Object.entries(this.assets.css).forEach(([key, val]) => {
+                if (!this.cdnCss[c.id]?.includes(val.url)) {
                   for (let m of c.modulesIterable) {
                     if (
                       m.type === 'css/mini-extract' &&
@@ -380,7 +360,8 @@ export default class RuntimeImportPlugin {
                       ]);
                     }
                   }
-                });
+                }
+              });
             }
           })(chunk);
         }
