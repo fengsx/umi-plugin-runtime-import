@@ -128,7 +128,6 @@ export default class RuntimeImportPlugin {
     module?: Module,
     res: { [key: string]: boolean } = {},
   ): boolean => {
-    if (!res) res = {};
     if (module?.dependencies) {
       for (let d of module.dependencies) {
         if (d.request === dep) return true;
@@ -167,7 +166,11 @@ export default class RuntimeImportPlugin {
     compilation.mainTemplate.hooks.localVars.tap(PluginName, (source) =>
       source.replace(`function jsonpScriptSrc(chunkId) {`, (searchValue) =>
         Template.asString([
-          `var cdnJs = ${JSON.stringify(this.cdnJs, null, '\t')};`,
+          `var cdnJs = typeof window !== "undefined" && window.__RUNTIME_IMPORT__JS__ || ${JSON.stringify(
+            this.cdnJs,
+            null,
+            '\t',
+          )};`,
           searchValue,
           Template.indent([
             `if(cdnJs[chunkId]) {`,
@@ -225,9 +228,6 @@ export default class RuntimeImportPlugin {
   addJsDependencies = (compilation: compilation.Compilation) => {
     compilation.hooks.afterOptimizeChunks.tap(PluginName, (chunks) => {
       for (const chunk of chunks) {
-        if (!chunk.isOnlyInitial()) {
-          return;
-        }
         if (chunk.hasRuntime()) {
           this.addGlobalCdn('js', chunk);
         }
@@ -261,7 +261,11 @@ export default class RuntimeImportPlugin {
         '',
         '// object to store loaded cdn CSS chunks',
         `var installedCdnCssChunks = {};`,
-        `var cdnCss = ${JSON.stringify(this.cdnCss, null, '\t')};`,
+        `var cdnCss = typeof window !== "undefined" && window.__RUNTIME_IMPORT__CSS__ || ${JSON.stringify(
+          this.cdnCss,
+          null,
+          '\t',
+        )};`,
       ]);
     });
 
@@ -340,12 +344,10 @@ export default class RuntimeImportPlugin {
       if (this.assets.css) {
         for (const chunk of compilation.chunks) {
           ((chunk) => {
-            if (!chunk.isOnlyInitial()) {
-              return;
-            }
             if (chunk.hasRuntime()) {
               this.addGlobalCdn('css', chunk);
             }
+
             //find css map
             for (let c of chunk.getAllAsyncChunks()) {
               Object.entries(this.assets.css).forEach(([key, val]) => {

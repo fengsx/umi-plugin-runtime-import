@@ -1,5 +1,9 @@
 import React from 'react';
 import { Avatar } from 'antd';
+import jQuery from 'jquery';
+console.info('-------------- jQuery --------------');
+console.info(jQuery);
+
 export default function E() {
   return (
     <Avatar

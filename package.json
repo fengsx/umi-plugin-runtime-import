@@ -1,7 +1,7 @@
 {
   "name": "umi-plugin-runtime-import",
   "main": "lib/index.js",
-  "version": "0.4.1",
+  "version": "0.5.1",
   "description": "dynamic import cdn modules when needed for umi",
   "authors": {
     "name": "fengsx",
@@ -11,7 +11,8 @@
   "scripts": {
     "start": "yarn build && cd examples && yarn && yarn start",
     "build": "father-build",
-    "release": "npm run build && npm publish",
+    "prepublishOnly": "npm run build",
+    "release": "npm publish",
     "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'",
     "test": "umi-test",
     "test:coverage": "umi-test --coverage"
@@ -46,5 +47,8 @@
   "files": [
     "lib"
   ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "license": "MIT"
 }
