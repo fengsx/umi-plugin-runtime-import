@@ -234,10 +234,8 @@ export default class RuntimeImportPlugin {
         let dependencies = this.getDependencies(chunk.getModules() as Module[]);
         for (let d of dependencies) {
           let chunkGroup = d.block?.chunkGroup;
-
           for (let key in this.assets.js) {
             if (
-              !this.cdnJs[key] &&
               chunkGroup &&
               !chunkGroup.chunks.find((ele) => `${ele.id}` === key) &&
               this.findDependencies(key, d.module)
