@@ -36,6 +36,7 @@ export default function (api: IApi) {
             ]),
         });
       },
+      onChange: api.ConfigChangeType.regenerateTmpFiles,
     },
     enableBy: api.EnableBy.config,
   });
