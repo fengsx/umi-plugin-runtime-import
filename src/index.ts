@@ -44,9 +44,10 @@ export default function (api: IApi) {
   let scripts: IScriptConfig = [];
   let links: IHTMLTag[] = [];
   let styles: IHTMLTag[] = [];
-  let assets: CdnOptType = api.userConfig.runtimeImport;
 
   api.chainWebpack((memo) => {
+    let assets: CdnOptType = api.config?.runtimeImport || {};
+
     memo.plugin('RuntimeImportPlugin').use(RuntimeImportPlugin, [
       {
         assets,
@@ -66,6 +67,8 @@ export default function (api: IApi) {
 
   api.modifyConfig((memo) => {
     const externals = memo.externals || {};
+
+    let assets: CdnOptType = memo?.runtimeImport || {};
 
     Object.entries(assets.js || {}).forEach(([key, value]) => {
       externals[key] = `var ${value.moduleName}`;
