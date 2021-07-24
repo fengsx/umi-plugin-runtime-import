@@ -5,45 +5,6 @@ import Chunk from 'webpack/lib/Chunk';
 
 const PluginName = 'RuntimeImportPlugin';
 
-type StringType = {
-  [key: string]: string;
-};
-
-export type CdnOptPublicType = {
-  url: string;
-  base?: string;
-};
-export type CssOptType = CdnOptPublicType;
-
-export type JsOptType = {
-  moduleName: string;
-} & CdnOptPublicType;
-
-export type CdnOptType = {
-  base?: string;
-  css?: {
-    [key: string]: string | CssOptType;
-  };
-  js?: {
-    [key: string]: JsOptType;
-  };
-};
-
-export type FormattedCdnOptType = {
-  base?: string;
-  css?: {
-    [key: string]: CssOptType;
-  };
-  js?: {
-    [key: string]: JsOptType;
-  };
-};
-
-export type PluginType = {
-  assets: CdnOptType;
-  getGlobalCdn: (type: 'css' | 'js', arg: StringType) => void;
-};
-
 type Module = compilation.Module & {
   content?: string;
   issuer: compilation.Module & { rawRequest: string };
@@ -70,47 +31,9 @@ export default class RuntimeImportPlugin {
   getGlobalCdn: PluginType['getGlobalCdn'] = () => null;
 
   constructor({ assets, getGlobalCdn }: PluginType) {
-    this.assets = this.formatOpt(assets);
+    this.assets = assets;
     this.getGlobalCdn = getGlobalCdn;
   }
-
-  formatUrl = (item: string | CssOptType | JsOptType, base?: string) => {
-    if (typeof item === 'string') {
-      return base ? new URL(item, base).toString() : item;
-    }
-    return item.base || base
-      ? new URL(item.url, item.base || base).toString()
-      : item.url;
-  };
-
-  formatOpt = (assets: CdnOptType): FormattedCdnOptType => {
-    const cdnJs: FormattedCdnOptType['js'] = {};
-    const cdnCss: FormattedCdnOptType['css'] = {};
-
-    Object.entries(assets.js || {}).forEach(([key, item]) => {
-      if (item) {
-        cdnJs[key] = {
-          ...item,
-          url: this.formatUrl(item, assets.base),
-        };
-      }
-    });
-
-    Object.entries(assets.css || {}).forEach(([key, item]) => {
-      if (typeof item === 'string') {
-        cdnCss[key] = {
-          url: this.formatUrl(item, assets.base),
-        };
-      } else if (item) {
-        cdnCss[key] = {
-          ...item,
-          url: this.formatUrl(item, assets.base),
-        };
-      }
-    });
-
-    return { js: cdnJs, css: cdnCss };
-  };
 
   addGlobalCdn = (type: 'js' | 'css', chunk: ChunkType) => {
     const global: StringType = {};

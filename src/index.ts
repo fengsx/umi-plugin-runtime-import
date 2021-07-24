@@ -1,9 +1,7 @@
-import { IScriptConfig } from '@umijs/types';
-import { IApi } from '@umijs/types';
-import { uniq } from 'lodash';
-import { getStyles, getScripts, IHTMLTag } from './utils';
+import { lodash } from '@umijs/utils';
+import { getStyles, getScripts, IHTMLTag, formatOpt } from './utils';
+import type { IScriptConfig, IApi } from '@umijs/types';
 import RuntimeImportPlugin from './runtimeImport';
-import type { CdnOptType } from './runtimeImport';
 
 export default function (api: IApi) {
   api.describe({
@@ -43,21 +41,18 @@ export default function (api: IApi) {
 
   let scripts: IScriptConfig = [];
   let links: IHTMLTag[] = [];
-  let styles: IHTMLTag[] = [];
 
   api.chainWebpack((memo) => {
-    let assets: CdnOptType = api.config?.runtimeImport || {};
-
     memo.plugin('RuntimeImportPlugin').use(RuntimeImportPlugin, [
       {
-        assets,
+        assets: formatOpt(api.config?.runtimeImport || {}),
         getGlobalCdn: (type, addon) => {
-          const set = uniq(Object.values(addon));
+          const set = lodash.uniq(Object.values(addon));
           if (type === 'js') {
             scripts = getScripts(set);
           }
           if (type === 'css') {
-            [links, styles] = getStyles(set);
+            [links] = getStyles(set);
           }
         },
       },
@@ -73,7 +68,6 @@ export default function (api: IApi) {
     Object.entries(assets.js || {}).forEach(([key, value]) => {
       externals[key] = `var ${value.moduleName}`;
     });
-
     return {
       ...memo,
       externals,
@@ -82,5 +76,4 @@ export default function (api: IApi) {
 
   api.addHTMLScripts(() => scripts);
   api.addHTMLLinks(() => links);
-  api.addHTMLStyles(() => styles);
 }

@@ -61,3 +61,44 @@ export const getStyles = (option: IStyleConfig): [IHTMLTag[], IHTMLTag[]] => {
   }
   return [linkArr, styleObj];
 };
+
+export const formatUrl = (
+  item: string | CssOptType | JsOptType,
+  base?: string,
+) => {
+  if (typeof item === 'string') {
+    return base ? new URL(item, base).toString() : item;
+  }
+  return item.base || base
+    ? new URL(item.url, item.base || base).toString()
+    : item.url;
+};
+
+export const formatOpt = (assets: CdnOptType): FormattedCdnOptType => {
+  const cdnJs: FormattedCdnOptType['js'] = {};
+  const cdnCss: FormattedCdnOptType['css'] = {};
+
+  Object.entries(assets.js || {}).forEach(([key, item]) => {
+    if (item) {
+      cdnJs[key] = {
+        ...item,
+        url: formatUrl(item, assets.base),
+      };
+    }
+  });
+
+  Object.entries(assets.css || {}).forEach(([key, item]) => {
+    if (typeof item === 'string') {
+      cdnCss[key] = {
+        url: formatUrl(item, assets.base),
+      };
+    } else if (item) {
+      cdnCss[key] = {
+        ...item,
+        url: formatUrl(item, assets.base),
+      };
+    }
+  });
+
+  return { js: cdnJs, css: cdnCss };
+};

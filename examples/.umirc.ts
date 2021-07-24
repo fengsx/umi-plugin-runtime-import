@@ -7,19 +7,16 @@ export default defineConfig({
   dynamicImport: {},
   plugins: [require.resolve('../lib')],
   externals: { echarts: 'echarts' },
-  scripts: ['https://gw.alipayobjects.com/os/lib/moment/2.29.1/moment.js'],
   runtimeImport: {
     base: 'https:///gw.alipayobjects.com/os/lib/',
     js: {
       react: {
         moduleName: 'React',
-        url:
-          'https:///gw.alipayobjects.com/os/lib/??react/16.13.0/umd/react.production.min.js,react-dom/16.13.1/umd/react-dom.production.min.js',
+        url: 'https:///gw.alipayobjects.com/os/lib/??react/16.13.0/umd/react.production.min.js,react-dom/16.13.1/umd/react-dom.production.min.js',
       },
       'react-dom': {
         moduleName: 'ReactDOM',
-        url:
-          '??react/16.13.0/umd/react.production.min.js,react-dom/16.13.1/umd/react-dom.production.min.js',
+        url: '??react/16.13.0/umd/react.production.min.js,react-dom/16.13.1/umd/react-dom.production.min.js',
       },
       jquery: {
         moduleName: 'jQuery',
@@ -27,8 +24,7 @@ export default defineConfig({
       },
       echarts: {
         moduleName: 'echarts',
-        url:
-          'https:///gw.alipayobjects.com/os/lib/echarts/4.9.0/dist/echarts.common.min.js',
+        url: 'https:///gw.alipayobjects.com/os/lib/echarts/4.9.0/dist/echarts.common.min.js',
       },
       antd: {
         moduleName: 'antd',
@@ -40,8 +36,7 @@ export default defineConfig({
       },
       'video.js': {
         moduleName: 'window["videojs"]',
-        url:
-          'https://gw.alipayobjects.com/os/lib/video.js/7.6.6/dist/video.min.js',
+        url: 'https://gw.alipayobjects.com/os/lib/video.js/7.6.6/dist/video.min.js',
       },
     },
     css: {
