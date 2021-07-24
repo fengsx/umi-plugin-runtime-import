@@ -21,7 +21,7 @@ type Module = compilation.Module & {
   };
 };
 
-export default class RuntimeImportPlugin {
+module.exports = class RuntimeImportPlugin {
   assets: FormattedCdnOptType;
 
   installedCss: { [key: string]: boolean } = {};
@@ -105,11 +105,8 @@ export default class RuntimeImportPlugin {
     );
 
     compilation.mainTemplate.hooks.requireEnsure?.tap(PluginName, (source) => {
-      // webpack 5 is using output.uniqueName instead jsonpFunction
-      // @ts-ignore
-      const { jsonpFunction, uniqueName } = compiler.options.output || {};
       const outputName = `window["${
-        uniqueName || jsonpFunction || 'webpackJsonp'
+        compiler.options.output?.jsonpFunction || 'webpackJsonp'
       }"]`;
 
       return source
@@ -301,4 +298,4 @@ export default class RuntimeImportPlugin {
       this.addCssDependencies(compilation);
     });
   }
-}
+};

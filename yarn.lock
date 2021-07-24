@@ -1571,24 +1571,24 @@
 
 "@types/source-list-map@*":
   version "0.1.2"
-  resolved "https://registry.nlark.com/@types/source-list-map/download/@types/source-list-map-0.1.2.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fsource-list-map%2Fdownload%2F%40types%2Fsource-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
+  resolved "https://registry.npm.alibaba-inc.com/@types/source-list-map/download/@types/source-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
   integrity sha1-AHiDYGP/rxdBI0m7o2QIfgrALsk=
 
 "@types/tapable@^1":
   version "1.0.8"
-  resolved "https://registry.nlark.com/@types/tapable/download/@types/tapable-1.0.8.tgz#b94a4391c85666c7b73299fd3ad79d4faa435310"
+  resolved "https://registry.npm.alibaba-inc.com/@types/tapable/download/@types/tapable-1.0.8.tgz#b94a4391c85666c7b73299fd3ad79d4faa435310"
   integrity sha1-uUpDkchWZse3Mpn9OtedT6pDUxA=
 
 "@types/uglify-js@*":
   version "3.13.1"
-  resolved "https://registry.nlark.com/@types/uglify-js/download/@types/uglify-js-3.13.1.tgz#5e889e9e81e94245c75b6450600e1c5ea2878aea"
+  resolved "https://registry.npm.alibaba-inc.com/@types/uglify-js/download/@types/uglify-js-3.13.1.tgz#5e889e9e81e94245c75b6450600e1c5ea2878aea"
   integrity sha1-XoienoHpQkXHW2RQYA4cXqKHiuo=
   dependencies:
     source-map "^0.6.1"
 
 "@types/webpack-sources@*":
   version "2.1.1"
-  resolved "https://registry.nlark.com/@types/webpack-sources/download/@types/webpack-sources-2.1.1.tgz?cache=0&sync_timestamp=1625278419600&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fwebpack-sources%2Fdownload%2F%40types%2Fwebpack-sources-2.1.1.tgz#6af17e3a3ded71eec2b98008d7c12f498a0a4506"
+  resolved "https://registry.npm.alibaba-inc.com/@types/webpack-sources/download/@types/webpack-sources-2.1.1.tgz#6af17e3a3ded71eec2b98008d7c12f498a0a4506"
   integrity sha1-avF+Oj3tce7CuYAI18EvSYoKRQY=
   dependencies:
     "@types/node" "*"
@@ -1597,7 +1597,7 @@
 
 "@types/webpack@^4.41.26":
   version "4.41.30"
-  resolved "https://registry.nlark.com/@types/webpack/download/@types/webpack-4.41.30.tgz?cache=0&sync_timestamp=1625278416468&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fwebpack%2Fdownload%2F%40types%2Fwebpack-4.41.30.tgz#fd3db6d0d41e145a8eeeafcd3c4a7ccde9068ddc"
+  resolved "https://registry.npm.alibaba-inc.com/@types/webpack/download/@types/webpack-4.41.30.tgz#fd3db6d0d41e145a8eeeafcd3c4a7ccde9068ddc"
   integrity sha1-/T220NQeFFqO7q/NPEp8zekGjdw=
   dependencies:
     "@types/node" "*"
@@ -1971,7 +1971,7 @@ ansi-wrap@0.1.0, ansi-wrap@^0.1.0:
 
 anymatch@^3.0.0, anymatch@~3.1.1, anymatch@~3.1.2:
   version "3.1.2"
-  resolved "https://registry.nlark.com/anymatch/download/anymatch-3.1.2.tgz#c0557c096af32f106198f4f4e2a383537e378716"
+  resolved "https://registry.npm.alibaba-inc.com/anymatch/download/anymatch-3.1.2.tgz#c0557c096af32f106198f4f4e2a383537e378716"
   integrity sha1-wFV8CWrzLxBhmPT04qODU343hxY=
   dependencies:
     normalize-path "^3.0.0"

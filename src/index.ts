@@ -1,7 +1,6 @@
 import { lodash } from '@umijs/utils';
 import { getStyles, getScripts, IHTMLTag, formatOpt } from './utils';
 import type { IScriptConfig, IApi } from '@umijs/types';
-import RuntimeImportPlugin from './runtimeImport';
 
 export default function (api: IApi) {
   api.describe({
@@ -42,21 +41,35 @@ export default function (api: IApi) {
   let scripts: IScriptConfig = [];
   let links: IHTMLTag[] = [];
 
-  api.chainWebpack((memo) => {
-    memo.plugin('RuntimeImportPlugin').use(RuntimeImportPlugin, [
-      {
-        assets: formatOpt(api.config?.runtimeImport || {}),
-        getGlobalCdn: (type, addon) => {
-          const set = lodash.uniq(Object.values(addon));
-          if (type === 'js') {
-            scripts = getScripts(set);
-          }
-          if (type === 'css') {
-            [links] = getStyles(set);
-          }
+  api.chainWebpack((memo, args) => {
+    const assets = formatOpt(api.config?.runtimeImport || {});
+    if ((args.webpack as any)?.isWebpack5) {
+      memo.module
+        .rule('mjs-rule')
+        .test(/.m?js/)
+        .resolve.set('fullySpecified', false);
+      scripts = getScripts(
+        lodash.uniq(Object.values(assets.js || {}).map((script) => script.url)),
+      );
+      [links] = getStyles(
+        lodash.uniq(Object.values(assets.css || {}).map((link) => link.url)),
+      );
+    } else {
+      memo.plugin('RuntimeImportPlugin').use(require('./runtimeImport'), [
+        {
+          assets,
+          getGlobalCdn: ((type, addon) => {
+            const set = Object.values(addon);
+            if (type === 'js') {
+              scripts = getScripts(set);
+            }
+            if (type === 'css') {
+              [links] = getStyles(set);
+            }
+          }) as PluginType['getGlobalCdn'],
         },
-      },
-    ]);
+      ]);
+    }
     return memo;
   });
 
@@ -68,6 +81,7 @@ export default function (api: IApi) {
     Object.entries(assets.js || {}).forEach(([key, value]) => {
       externals[key] = `var ${value.moduleName}`;
     });
+
     return {
       ...memo,
       externals,
