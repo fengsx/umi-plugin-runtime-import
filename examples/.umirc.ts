@@ -5,26 +5,27 @@ export default defineConfig({
     type: 'none',
   },
   dynamicImport: {},
+  webpack5: {},
   plugins: [require.resolve('../lib')],
   externals: { echarts: 'echarts' },
   runtimeImport: {
-    base: 'https:///gw.alipayobjects.com/os/lib/',
+    base: 'https://gw.alipayobjects.com/os/lib/',
     js: {
       react: {
         moduleName: 'React',
-        url: 'https:///gw.alipayobjects.com/os/lib/??react/16.13.0/umd/react.production.min.js,react-dom/16.13.1/umd/react-dom.production.min.js',
+        url: 'https://unpkg.com/react@16.13.0/umd/react.development.js',
       },
       'react-dom': {
         moduleName: 'ReactDOM',
-        url: '??react/16.13.0/umd/react.production.min.js,react-dom/16.13.1/umd/react-dom.production.min.js',
+        url: 'https://unpkg.com/react-dom@16.13.0/umd/react-dom.development.js',
       },
       jquery: {
         moduleName: 'jQuery',
-        url: 'https:///gw.alipayobjects.com/os/lib/jquery/3.5.1/dist/jquery.js',
+        url: 'https://unpkg.com/jquery@3.6.0/dist/jquery.js',
       },
       echarts: {
         moduleName: 'echarts',
-        url: 'https:///gw.alipayobjects.com/os/lib/echarts/4.9.0/dist/echarts.common.min.js',
+        url: 'https://unpkg.com/echarts@4.9.0/dist/echarts.common.min.js',
       },
       antd: {
         moduleName: 'antd',
@@ -32,7 +33,7 @@ export default defineConfig({
       },
       moment: {
         moduleName: 'moment',
-        url: 'https://gw.alipayobjects.com/os/lib/moment/2.29.1/moment.js',
+        url: 'https://unpkg.com/moment@2.29.1/moment.js',
       },
       'video.js': {
         moduleName: 'window["videojs"]',
@@ -43,7 +44,7 @@ export default defineConfig({
       'video.js/dist/video-js.min.css':
         'video.js/7.6.6/dist/alt/video-js-cdn.min.css',
       'antd/dist/antd.css': {
-        url: 'https://gw.alipayobjects.com/os/lib/antd/4.12.3/dist/antd.css',
+        url: 'https://gw.alipayobjects.com/os/lib/antd/4.16.8/dist/antd.css',
       },
     },
   },

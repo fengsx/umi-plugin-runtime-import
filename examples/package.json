@@ -7,28 +7,31 @@
   },
   "repository": "https://github.com/fengsx/umi-plugin-runtime-import",
   "scripts": {
-    "start": "ANALYZE=1 umi dev",
-    "build": "ANALYZE=1 umi build"
+    "start": "umi dev",
+    "build": "ANALYZE=1 COMPRESS=none umi build"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"
   },
   "dependencies": {
-    "antd": "^4.12.3",
-    "jquery": "^3.5.1",
-    "moment": "^2.29.1",
-    "react": "^16.13.0",
-    "react-dom": "^16.13.0",
-    "video.js": "^7.10.2",
     "@types/echarts": "^4.9.2",
     "@types/jquery": "^3.5.5",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@umijs/preset-react": "^1.8.21",
+    "antd": "^4.12.3",
     "cross-env": "^6.0.3",
     "father-build": "^1.17.2",
+    "jquery": "^3.5.1",
     "lint-staged": "^10.0.7",
-    "prettier": "^2.2.0"
+    "moment": "^2.29.1",
+    "prettier": "^2.2.0",
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0",
+    "video.js": "^7.10.2"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "umi": "^3.5.15"
+  }
 }

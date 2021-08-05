@@ -9,23 +9,23 @@ declare module '*.svg' {
   export default url;
 }
 
-type CdnOptPublicType = {
+type BaseAssetsType = {
   url: string;
   base?: string;
 };
-type CssOptType = CdnOptPublicType;
+type CssAssetsType = BaseAssetsType;
 
-type JsOptType = {
+type JsAssetsType = {
   moduleName: string;
-} & CdnOptPublicType;
+} & BaseAssetsType;
 
-type CdnOptType = {
+type AssetsType = {
   base?: string;
   css?: {
-    [key: string]: string | CssOptType;
+    [key: string]: string | CssAssetsType;
   };
   js?: {
-    [key: string]: JsOptType;
+    [key: string]: JsAssetsType;
   };
 };
 
@@ -33,17 +33,17 @@ type StringType = {
   [key: string]: string;
 };
 
-type FormattedCdnOptType = {
+type FormattedOptType = {
   base?: string;
   css?: {
-    [key: string]: CssOptType;
+    [key: string]: CssAssetsType;
   };
   js?: {
-    [key: string]: JsOptType;
+    [key: string]: JsAssetsType;
   };
 };
 
 type PluginType = {
-  assets: FormattedCdnOptType;
-  getGlobalCdn: (type: 'css' | 'js', arg: StringType) => void;
+  assets: FormattedOptType;
+  getEntryAssets: (type: 'css' | 'js', arg: StringType) => void;
 };

@@ -43,40 +43,40 @@ export default function (api: IApi) {
 
   api.chainWebpack((memo, args) => {
     const assets = formatOpt(api.config?.runtimeImport || {});
-    if ((args.webpack as any)?.isWebpack5) {
-      memo.module
-        .rule('mjs-rule')
-        .test(/.m?js/)
-        .resolve.set('fullySpecified', false);
-      scripts = getScripts(
-        lodash.uniq(Object.values(assets.js || {}).map((script) => script.url)),
-      );
-      [links] = getStyles(
-        lodash.uniq(Object.values(assets.css || {}).map((link) => link.url)),
-      );
-    } else {
-      memo.plugin('RuntimeImportPlugin').use(require('./runtimeImport'), [
-        {
-          assets,
-          getGlobalCdn: ((type, addon) => {
-            const set = Object.values(addon);
-            if (type === 'js') {
-              scripts = getScripts(set);
-            }
-            if (type === 'css') {
-              [links] = getStyles(set);
-            }
-          }) as PluginType['getGlobalCdn'],
-        },
-      ]);
+    if (!!args.mfsu) {
+      return memo;
     }
+    const RuntimeImportPlugin = (args.webpack as any)?.isWebpack5
+      ? require('./webpack5')
+      : require('./webpack4');
+
+    memo.plugin('RuntimeImportPlugin').use(RuntimeImportPlugin, [
+      {
+        assets,
+        getEntryAssets: ((type, addon) => {
+          const set = Object.values(addon);
+          if (type === 'js') {
+            scripts = lodash.uniqBy(scripts.concat(getScripts(set)), (script) =>
+              typeof script === 'string' ? script : script.src,
+            );
+          }
+          if (type === 'css') {
+            links = lodash.uniq(links.concat(getStyles(set)[0]));
+          }
+        }) as PluginType['getEntryAssets'],
+      },
+    ]);
+
     return memo;
   });
 
   api.modifyConfig((memo) => {
+    if (!!memo.mfsu) {
+      return memo;
+    }
     const externals = memo.externals || {};
 
-    let assets: CdnOptType = memo?.runtimeImport || {};
+    let assets: AssetsType = memo?.runtimeImport || {};
 
     Object.entries(assets.js || {}).forEach(([key, value]) => {
       externals[key] = `var ${value.moduleName}`;

@@ -1,56 +1,34 @@
-import { Template, Compiler } from 'webpack';
-import type { Chunk as ChunkType, compilation } from 'webpack';
-// @ts-ignore
+import { Template } from 'webpack';
 import Chunk from 'webpack/lib/Chunk';
 
 const PluginName = 'RuntimeImportPlugin';
 
-type Module = compilation.Module & {
-  content?: string;
-  issuer: compilation.Module & { rawRequest: string };
-  source?: any;
-  module?: Module;
-  dependencies?: Module[];
-  userRequest?: string;
-  request?: string;
-  blocks?: {
-    dependencies: Module[];
-  }[];
-  block?: {
-    chunkGroup: compilation.ChunkGroup;
-  };
-};
-
 module.exports = class RuntimeImportPlugin {
-  assets: FormattedCdnOptType;
+  assets;
 
-  installedCss: { [key: string]: boolean } = {};
-  cdnCss: { [key: string]: string[] } = {};
-  cdnJs: { [key: string]: JsOptType } = {};
+  installedCss = {};
+  cdnCss = {};
+  cdnJs = {};
 
-  getGlobalCdn: PluginType['getGlobalCdn'] = () => null;
+  getEntryAssets = () => null;
 
-  constructor({ assets, getGlobalCdn }: PluginType) {
+  constructor({ assets, getEntryAssets }) {
     this.assets = assets;
-    this.getGlobalCdn = getGlobalCdn;
+    this.getEntryAssets = getEntryAssets;
   }
 
-  addGlobalCdn = (type: 'js' | 'css', chunk: ChunkType) => {
-    const global: StringType = {};
+  addEntryAssets = (type, chunk) => {
+    const global = {};
     Object.entries(this.assets[type] || {}).forEach(([k, v]) => {
-      if (!global[k] && this.findDependencies(k, chunk.entryModule as Module)) {
+      if (!global[k] && this.findDependencies(k, chunk.entryModule)) {
         global[k] = v.url;
       }
     });
 
-    this.getGlobalCdn(type, global);
+    this.getEntryAssets(type, global);
   };
 
-  findDependencies = (
-    dep: string,
-    module?: Module,
-    res: { [key: string]: boolean } = {},
-  ): boolean => {
+  findDependencies = (dep, module, res = {}) => {
     if (module?.dependencies) {
       for (let d of module.dependencies) {
         if (d.request === dep) return true;
@@ -66,8 +44,8 @@ module.exports = class RuntimeImportPlugin {
     return false;
   };
 
-  getDependencies = (modules: Module[]): Module[] => {
-    let dependencies: Module[] = [];
+  getDependencies = (modules) => {
+    let dependencies = [];
     modules.forEach((module) => {
       if (typeof module.source === 'function') {
         module.blocks?.forEach((block) => {
@@ -82,14 +60,11 @@ module.exports = class RuntimeImportPlugin {
     return dependencies;
   };
 
-  addJsTemplate = (
-    compiler: Compiler,
-    compilation: compilation.Compilation,
-  ) => {
+  addJsTemplate = (compiler, compilation) => {
     compilation.mainTemplate.hooks.localVars.tap(PluginName, (source) =>
       source.replace(`function jsonpScriptSrc(chunkId) {`, (searchValue) =>
         Template.asString([
-          `var cdnJs = typeof window !== "undefined" && window.__RUNTIME_IMPORT__JS__ || ${JSON.stringify(
+          `var cdnJs = typeof window !== "undefined" && window.__RUNTIME_IMPORT_JS__ || ${JSON.stringify(
             this.cdnJs,
             null,
             '\t',
@@ -145,13 +120,13 @@ module.exports = class RuntimeImportPlugin {
     });
   };
 
-  addJsDependencies = (compilation: compilation.Compilation) => {
+  addJsDependencies = (compilation) => {
     compilation.hooks.afterOptimizeChunks.tap(PluginName, (chunks) => {
       for (const chunk of chunks) {
         if (chunk.hasRuntime()) {
-          this.addGlobalCdn('js', chunk);
+          this.addEntryAssets('js', chunk);
         }
-        let dependencies = this.getDependencies(chunk.getModules() as Module[]);
+        let dependencies = this.getDependencies(chunk.getModules());
         for (let d of dependencies) {
           let chunkGroup = d.block?.chunkGroup;
           for (let key in this.assets.js) {
@@ -172,14 +147,14 @@ module.exports = class RuntimeImportPlugin {
     });
   };
 
-  addCssTemplate = (compilation: compilation.Compilation) => {
+  addCssTemplate = (compilation) => {
     compilation.mainTemplate.hooks.localVars.tap(PluginName, (source) => {
       return Template.asString([
         source,
         '',
         '// object to store loaded cdn CSS chunks',
         `var installedCdnCssChunks = {};`,
-        `var cdnCss = typeof window !== "undefined" && window.__RUNTIME_IMPORT__CSS__ || ${JSON.stringify(
+        `var cdnCss = typeof window !== "undefined" && window.__RUNTIME_IMPORT_CSS__ || ${JSON.stringify(
           this.cdnCss,
           null,
           '\t',
@@ -243,11 +218,11 @@ module.exports = class RuntimeImportPlugin {
     });
   };
 
-  addCssDependencies = (compilation: compilation.Compilation) => {
+  addCssDependencies = (compilation) => {
     compilation.hooks.afterOptimizeDependencies.tap(PluginName, (modules) => {
       Object.entries(this.assets.css || {}).forEach(([key, val]) => {
         if (!this.installedCss[key]) {
-          (modules as Module[])
+          modules
             .filter((m) => m.issuer?.rawRequest === key)
             .forEach((m) => {
               //i don't know how to exclude it now, so, clear the content
@@ -263,7 +238,7 @@ module.exports = class RuntimeImportPlugin {
         for (const chunk of compilation.chunks) {
           ((chunk) => {
             if (chunk.hasRuntime()) {
-              this.addGlobalCdn('css', chunk);
+              this.addEntryAssets('css', chunk);
             }
 
             //find css map
@@ -289,7 +264,7 @@ module.exports = class RuntimeImportPlugin {
     });
   };
 
-  apply(compiler: Compiler) {
+  apply(compiler) {
     compiler.hooks.compilation.tap(PluginName, (compilation) => {
       this.addJsTemplate(compiler, compilation);
       this.addJsDependencies(compilation);

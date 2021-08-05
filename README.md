@@ -18,7 +18,7 @@ Configure in `.umirc.js` or `config/config.ts`,
 ``` javascript
 export default {
   runtimeImport: {
-    base: 'https:///gw.alipayobjects.com/os/lib/',
+    base: 'https://gw.alipayobjects.com/os/lib/',
     js: {
       react: {
         moduleName: 'React',

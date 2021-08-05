@@ -63,7 +63,7 @@ export const getStyles = (option: IStyleConfig): [IHTMLTag[], IHTMLTag[]] => {
 };
 
 export const formatUrl = (
-  item: string | CssOptType | JsOptType,
+  item: string | CssAssetsType | JsAssetsType,
   base?: string,
 ) => {
   if (typeof item === 'string') {
@@ -74,9 +74,9 @@ export const formatUrl = (
     : item.url;
 };
 
-export const formatOpt = (assets: CdnOptType): FormattedCdnOptType => {
-  const cdnJs: FormattedCdnOptType['js'] = {};
-  const cdnCss: FormattedCdnOptType['css'] = {};
+export const formatOpt = (assets: AssetsType): FormattedOptType => {
+  const cdnJs: FormattedOptType['js'] = {};
+  const cdnCss: FormattedOptType['css'] = {};
 
   Object.entries(assets.js || {}).forEach(([key, item]) => {
     if (item) {
