@@ -8,23 +8,23 @@ export default defineConfig({
   plugins: [require.resolve('../lib')],
   externals: { echarts: 'echarts' },
   runtimeImport: {
-    base: 'https:///gw.alipayobjects.com/os/lib/',
+    base: 'https://gw.alipayobjects.com/os/lib/',
     js: {
       react: {
         moduleName: 'React',
-        url: 'https:///gw.alipayobjects.com/os/lib/??react/16.13.0/umd/react.production.min.js,react-dom/16.13.1/umd/react-dom.production.min.js',
+        url: 'https://gw.alipayobjects.com/os/lib/??react/16.13.0/umd/react.production.min.js,react-dom/16.13.1/umd/react-dom.production.min.js',
       },
       'react-dom': {
         moduleName: 'ReactDOM',
-        url: '??react/16.13.0/umd/react.production.min.js,react-dom/16.13.1/umd/react-dom.production.min.js',
+        url: 'https://gw.alipayobjects.com/os/lib/??react/16.13.0/umd/react.production.min.js,react-dom/16.13.1/umd/react-dom.production.min.js',
       },
       jquery: {
         moduleName: 'jQuery',
-        url: 'https:///gw.alipayobjects.com/os/lib/jquery/3.5.1/dist/jquery.js',
+        url: 'https://gw.alipayobjects.com/os/lib/jquery/3.5.1/dist/jquery.js',
       },
       echarts: {
         moduleName: 'echarts',
-        url: 'https:///gw.alipayobjects.com/os/lib/echarts/4.9.0/dist/echarts.common.min.js',
+        url: 'https://gw.alipayobjects.com/os/lib/echarts/4.9.0/dist/echarts.common.min.js',
       },
       antd: {
         moduleName: 'antd',

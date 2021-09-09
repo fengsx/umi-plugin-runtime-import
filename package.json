@@ -1,7 +1,7 @@
 {
   "name": "umi-plugin-runtime-import",
   "main": "lib/index.js",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "dynamic import cdn modules when needed for umi",
   "authors": {
     "name": "fengsx",

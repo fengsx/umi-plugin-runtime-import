@@ -88,6 +88,10 @@ export default function (api: IApi) {
     };
   });
 
-  api.addHTMLScripts(() => scripts);
-  api.addHTMLLinks(() => links);
+  api.addHTMLScripts(() =>
+    lodash.uniqBy(scripts, (script) =>
+      typeof script === 'string' ? script : script.src,
+    ),
+  );
+  api.addHTMLLinks(() => lodash.uniq(links));
 }
